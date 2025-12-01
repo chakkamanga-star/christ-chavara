@@ -347,7 +347,7 @@
     <div class="content-box">
       <h1>🎁 Don't you want to see your Christmas Friend! 🎄</h1>
       <div id="content"></div>
-      <a class="btn" href="index1.html">← Back to Names</a>
+    
     </div>
   </div>
 
@@ -430,6 +430,11 @@
       's34': 'Alen Antony -MSW',
       's35': 'Aryan BBA IB'
     };
+// Block going back to previous page
+history.pushState(null, "", location.href);
+window.addEventListener("popstate", function () {
+  history.pushState(null, "", location.href);
+});
 
     const christmasQuotes = [
       "Christmas is not just a day, it's a feeling. May your heart be filled with warmth, joy, and the magic of giving this season!",
@@ -593,4 +598,5 @@
   </script>
 </body>
 </html>
+
 
