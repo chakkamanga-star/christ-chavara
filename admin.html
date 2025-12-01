@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin Panel - Christmas Friend</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      min-height: 100vh;
+      font-family: 'Arial', sans-serif;
+      color: #fff;
+      background: linear-gradient(135deg, #1a0033 0%, #330066 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      position: relative;
+      overflow: auto;
+    }
+
+    .star {
+      position: fixed;
+      width: 2px;
+      height: 2px;
+      background: white;
+      border-radius: 50%;
+      animation: twinkle 3s infinite;
+    }
+
+    @keyframes twinkle {
+      0%, 100% { opacity: 0.3; }
+      50% { opacity: 1; }
+    }
+
+    .container {
+      position: relative;
+      z-index: 10;
+      max-width: 900px;
+      width: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      border-radius: 20px;
+      padding: 40px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.8);
+      backdrop-filter: blur(10px);
+      border: 2px solid rgba(255, 215, 0, 0.3);
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 2.2rem;
+      margin-bottom: 10px;
+      color: #ffd700;
+      text-shadow: 2px 2px 8px rgba(0,0,0,0.8);
+      animation: glow 2s ease-in-out infinite;
+    }
+
+    @keyframes glow {
+      0%, 100% { text-shadow: 2px 2px 8px rgba(255, 215, 0, 0.5); }
+      50% { text-shadow: 2px 2px 20px rgba(255, 215, 0, 0.9); }
+    }
+
+    .subtitle {
+      text-align: center;
+      color: #bbb;
+      margin-bottom: 30px;
+      font-size: 0.95rem;
+    }
+
+    .login-form {
+      max-width: 400px;
+      margin: 0 auto;
+      text-align: center;
+    }
+
+    .login-form input {
+      width: 100%;
+      padding: 15px;
+      border: 2px solid rgba(255, 215, 0, 0.3);
+      border-radius: 8px;
+      background: rgba(0, 0, 0, 0.5);
+      color: white;
+      font-size: 1rem;
+      margin-bottom: 20px;
+    }
+
+    .login-form input:focus {
+      outline: none;
+      border-color: #ffd700;
+    }
+
+    .admin-content {
+      display: none;
+    }
+
+    .section {
+      background: rgba(255, 255, 255, 0.05);
+      padding: 25px;
+      border-radius: 12px;
+      margin-bottom: 25px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .section h2 {
+      color: #ffd700;
+      margin-bottom: 20px;
+      font-size: 1.5rem;
+      border-bottom: 2px solid rgba(255, 215, 0, 0.3);
+      padding-bottom: 10px;
+    }
+
+    .assignments-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 15px;
+      margin-top: 20px;
+    }
+
+    .assignment-card {
+      background: rgba(0, 0, 0, 0.4);
+      padding: 15px;
+      border-radius: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      transition: all 0.3s ease;
+    }
+
+    .assignment-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(255, 215, 0, 0.3);
+    }
+
+    .assignment-card strong {
+      color: #ffd700;
+      font-size: 1.1rem;
+    }
+
+    .assignment-card select {
+      width: 100%;
+      padding: 8px;
+      margin-top: 10px;
+      border-radius: 6px;
+      background: rgba(0, 0, 0, 0.6);
+      color: white;
+      border: 1px solid rgba(255, 215, 0, 0.3);
+      cursor: pointer;
+    }
+
+    .students-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 12px;
+      margin-top: 15px;
+    }
+
+    .student-item {
+      background: rgba(0, 0, 0, 0.4);
+      padding: 12px;
+      border-radius: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .student-name {
+      color: #fff;
+      font-weight: bold;
+    }
+
+    .delete-btn {
+      background: #dc3545;
+      color: white;
+      border: none;
+      padding: 5px 12px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      transition: all 0.2s ease;
+    }
+
+    .delete-btn:hover {
+      background: #c82333;
+      transform: scale(1.05);
+    }
+
+    .add-student-form {
+      display: flex;
+      gap: 10px;
+      margin-top: 15px;
+    }
+
+    .add-student-form input {
+      flex: 1;
+      padding: 12px;
+      border: 2px solid rgba(255, 215, 0, 0.3);
+      border-radius: 8px;
+      background: rgba(0, 0, 0, 0.5);
+      color: white;
+    }
+
+    .btn {
+      padding: 12px 28px;
+      border: none;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+      color: #8b0000;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(255, 215, 0, 0.5);
+    }
+
+    .btn-success {
+      background: #28a745;
+      color: white;
+    }
+
+    .btn-success:hover {
+      background: #218838;
+      transform: translateY(-2px);
+    }
+
+    .btn-danger {
+      background: #dc3545;
+      color: white;
+    }
+
+    .btn-danger:hover {
+      background: #c82333;
+      transform: translateY(-2px);
+    }
+
+    .btn-secondary {
+      background: #6c757d;
+      color: white;
+      margin-top: 20px;
+    }
+
+    .btn-secondary:hover {
+      background: #5a6268;
+    }
+
+    .action-buttons {
+      display: flex;
+      gap: 15px;
+      flex-wrap: wrap;
+      margin-top: 20px;
+    }
+
+    .error-msg {
+      color: #ff6b6b;
+      text-align: center;
+      margin-top: 15px;
+      font-size: 0.95rem;
+    }
+
+    .success-msg {
+      color: #51cf66;
+      text-align: center;
+      margin-top: 15px;
+      font-size: 0.95rem;
+      animation: fadeIn 0.5s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🔐 Admin Panel</h1>
+    <p class="subtitle">Manage Christmas Friend Assignments</p>
+
+    <!-- Login Form -->
+    <div id="loginSection" class="login-form">
+      <input type="password" id="passwordInput" placeholder="Enter Admin Password" />
+      <button class="btn btn-primary" onclick="login()">Login</button>
+      <p id="loginError" class="error-msg"></p>
+    </div>
+
+    <!-- Admin Content -->
+    <div id="adminContent" class="admin-content">
+      
+      <!-- Assignments Section -->
+      <div class="section">
+        <h2>📝 Edit Assignments</h2>
+        <p style="color: #bbb; margin-bottom: 15px;">Change who each person is matched with:</p>
+        <div id="assignmentsGrid" class="assignments-grid"></div>
+        <div class="action-buttons">
+          <button class="btn btn-success" onclick="saveAssignments()">💾 Save Changes</button>
+        </div>
+        <p id="saveMessage" class="success-msg"></p>
+      </div>
+
+      <!-- Students Management -->
+      <div class="section">
+        <h2>👥 Manage Students</h2>
+        <div id="studentsList" class="students-list"></div>
+        
+        <h3 style="color: #ffd700; margin-top: 25px; margin-bottom: 10px;">Add New Student</h3>
+        <div class="add-student-form">
+          <input type="text" id="newStudentName" placeholder="Enter student name" />
+          <button class="btn btn-success" onclick="addStudent()">Add</button>
+        </div>
+      </div>
+
+      <!-- Reset Section -->
+      <div class="section">
+        <h2>🔄 Reset Options</h2>
+        <div class="action-buttons">
+          <button class="btn btn-danger" onclick="resetAllReveals()">Reset All Reveals</button>
+          <button class="btn btn-danger" onclick="resetEverything()">Reset Everything (All Data)</button>
+        </div>
+        <p style="color: #bbb; margin-top: 15px; font-size: 0.9rem;">
+          ⚠️ "Reset All Reveals" allows everyone to open their names again.<br>
+          ⚠️ "Reset Everything" will delete all data including assignments.
+        </p>
+      </div>
+
+      <button class="btn btn-secondary" onclick="logout()">Logout</button>
+    </div>
+  </div>
+
+  <script>
+    const ADMIN_PASSWORD = 'sindhu'; // Change if you want
+    const USED_KEY_PREFIX = 'christmas_friend_used_';
+    const ASSIGNMENTS_KEY = 'christmas_assignments';
+    const STUDENTS_KEY = 'christmas_students';
+
+    // Stars in background
+    function createStars() {
+      for (let i = 0; i < 50; i++) {
+        const star = document.createElement('div');
+        star.className = 'star';
+        star.style.left = Math.random() * 100 + '%';
+        star.style.top = Math.random() * 100 + '%';
+        star.style.animationDelay = Math.random() * 3 + 's';
+        document.body.appendChild(star);
+      }
+    }
+    createStars();
+
+    // Default data – your 35 people
+    let students = [
+      { id: 's1',  name: 'Daniel jaisan - Bcom Acca' },
+      { id: 's2',  name: 'Tom Zacharias- Bcom BA' },
+      { id: 's3',  name: 'Shefin Shinoj - BCom Acca' },
+      { id: 's4',  name: 'Jewel Mariya-BBA' },
+      { id: 's5',  name: 'Anu Mary - MSW' },
+      { id: 's6',  name: 'Amal Biju- MSW' },
+      { id: 's7',  name: 'Anas Joseph  - BCA' },
+      { id: 's8',  name: 'Robin Roy - appl Eco' },
+      { id: 's9',  name: 'Paulson Jayson - MSW' },
+      { id: 's10', name: 'Joseph Prakash - BCA Cybersecurity' },
+      { id: 's11', name: 'Clare B Smiley -B.com LLB' },
+      { id: 's12', name: 'Antony Sabu - BRNA' },
+      { id: 's13', name: 'Alita Rose Jobi - B.Com' },
+      { id: 's14', name: 'Anna Maria Sunny - BCA Cyber Security' },
+      { id: 's15', name: 'Roshan k Thomas- MSW' },
+      { id: 's16', name: 'Mathews j -bcom' },
+      { id: 's17', name: 'Siyona maria Sony - bca cybersecurity' },
+      { id: 's18', name: 'Ann Kochii: Ann Kochikunnel  - B.Com LL.B' },
+      { id: 's19', name: 'Ansu Abraham- MSW' },
+      { id: 's20', name: 'Shon Sebastian - MCA' },
+      { id: 's21', name: 'Ashlin Shibu - MSW' },
+      { id: 's22', name: 'Jincy Ulahannan - MSW' },
+      { id: 's23', name: 'Gouri Sunil- MSW' },
+      { id: 's24', name: 'Anagha Joshy - LLB' },
+      { id: 's25', name: 'John mundadan -BBAinternational business' },
+      { id: 's26', name: 'Pappu Gigy-BBA IB' },
+      { id: 's27', name: 'Ryan b kalloli-Bcom Business Analytics' },
+      { id: 's28', name: 'Ethan  - MSW' },
+      { id: 's29', name: 'Navya - MSW' },
+      { id: 's30', name: 'Athulya Benny - BCA' },
+      { id: 's31', name: 'Prince - LAW' },
+      { id: 's32', name: 'Staines - AIML' },
+      { id: 's33', name: 'Ajil-AIML' },
+      { id: 's34', name: 'Alen Antony -MSW' },
+      { id: 's35', name: 'Aryan BBA IB' }
+    ];
+
+    // Same random assignment as scratch.html
+    let assignments = {
+      's1':  'Antony Sabu - BRNA',
+      's2':  'Ryan b kalloli-Bcom Business Analytics',
+      's3':  'Anu Mary - MSW',
+      's4':  'Shon Sebastian - MCA',
+      's5':  'Prince - LAW',
+      's6':  'Paulson Jayson - MSW',
+      's7':  'Alen Antony -MSW',
+      's8':  'Gouri Sunil- MSW',
+      's9':  'Tom Zacharias- Bcom BA',
+      's10': 'Roshan k Thomas- MSW',
+      's11': 'Pappu Gigy-BBA IB',
+      's12': 'Staines - AIML',
+      's13': 'Navya - MSW',
+      's14': 'Daniel jaisan - Bcom Acca',
+      's15': 'Anagha Joshy - LLB',
+      's16': 'Ansu Abraham- MSW',
+      's17': 'Jincy Ulahannan - MSW',
+      's18': 'Robin Roy - appl Eco',
+      's19': 'Anna Maria Sunny - BCA Cyber Security',
+      's20': 'Athulya Benny - BCA',
+      's21': 'Aryan BBA IB',
+      's22': 'Ethan  - MSW',
+      's23': 'Ann Kochii: Ann Kochikunnel  - B.Com LL.B',
+      's24': 'Anas Joseph  - BCA',
+      's25': 'Clare B Smiley -B.com LLB',
+      's26': 'Ajil-AIML',
+      's27': 'Shefin Shinoj - BCom Acca',
+      's28': 'Amal Biju- MSW',
+      's29': 'Ashlin Shibu - MSW',
+      's30': 'Mathews j -bcom',
+      's31': 'Joseph Prakash - BCA Cybersecurity',
+      's32': 'John mundadan -BBAinternational business',
+      's33': 'Jewel Mariya-BBA',
+      's34': 'Alita Rose Jobi - B.Com',
+      's35': 'Siyona maria Sony - bca cybersecurity'
+    };
+
+    // Load from localStorage if present
+    function loadData() {
+      const savedStudents = localStorage.getItem(STUDENTS_KEY);
+      const savedAssignments = localStorage.getItem(ASSIGNMENTS_KEY);
+      
+      if (savedStudents) students = JSON.parse(savedStudents);
+      if (savedAssignments) assignments = JSON.parse(savedAssignments);
+    }
+
+    function saveData() {
+      localStorage.setItem(STUDENTS_KEY, JSON.stringify(students));
+      localStorage.setItem(ASSIGNMENTS_KEY, JSON.stringify(assignments));
+    }
+
+    function login() {
+      const password = document.getElementById('passwordInput').value;
+      if (password === ADMIN_PASSWORD) {
+        document.getElementById('loginSection').style.display = 'none';
+        document.getElementById('adminContent').style.display = 'block';
+        loadData();
+        renderAssignments();
+        renderStudents();
+      } else {
+        document.getElementById('loginError').textContent = '❌ Incorrect password';
+      }
+    }
+
+    function logout() {
+      document.getElementById('loginSection').style.display = 'block';
+      document.getElementById('adminContent').style.display = 'none';
+      document.getElementById('passwordInput').value = '';
+      document.getElementById('loginError').textContent = '';
+    }
+
+    function renderAssignments() {
+      const grid = document.getElementById('assignmentsGrid');
+      grid.innerHTML = '';
+
+      students.forEach(student => {
+        const card = document.createElement('div');
+        card.className = 'assignment-card';
+        
+        const select = document.createElement('select');
+        select.id = 'assign_' + student.id;
+        
+        students.forEach(s => {
+          const option = document.createElement('option');
+          option.value = s.name;
+          option.textContent = s.name;
+          if (assignments[student.id] === s.name) {
+            option.selected = true;
+          }
+          select.appendChild(option);
+        });
+
+        card.innerHTML = `<strong>${student.name}</strong> → `;
+        card.appendChild(select);
+        grid.appendChild(card);
+      });
+    }
+
+    function renderStudents() {
+      const list = document.getElementById('studentsList');
+      list.innerHTML = '';
+
+      students.forEach(student => {
+        const item = document.createElement('div');
+        item.className = 'student-item';
+        item.innerHTML = `
+          <span class="student-name">${student.name}</span>
+          <button class="delete-btn" onclick="deleteStudent('${student.id}')">Delete</button>
+        `;
+        list.appendChild(item);
+      });
+    }
+
+    function saveAssignments() {
+      students.forEach(student => {
+        const select = document.getElementById('assign_' + student.id);
+        assignments[student.id] = select.value;
+      });
+      saveData();
+      document.getElementById('saveMessage').textContent = '✅ Assignments saved successfully!';
+      setTimeout(() => {
+        document.getElementById('saveMessage').textContent = '';
+      }, 3000);
+    }
+
+    function addStudent() {
+      const nameInput = document.getElementById('newStudentName');
+      const name = nameInput.value.trim();
+      
+      if (!name) {
+        alert('Please enter a name');
+        return;
+      }
+
+      const newId = 's' + (students.length + 1);
+      students.push({ id: newId, name: name });
+      assignments[newId] = students[0].name; // Default assignment
+      
+      saveData();
+      renderAssignments();
+      renderStudents();
+      nameInput.value = '';
+    }
+
+    function deleteStudent(id) {
+      if (!confirm('Are you sure you want to delete this student?')) return;
+      
+      students = students.filter(s => s.id !== id);
+      delete assignments[id];
+      localStorage.removeItem(USED_KEY_PREFIX + id);
+      
+      saveData();
+      renderAssignments();
+      renderStudents();
+    }
+
+    function resetAllReveals() {
+      if (!confirm('Reset all reveals? Everyone can open their names again.')) return;
+      
+      students.forEach(student => {
+        localStorage.removeItem(USED_KEY_PREFIX + student.id);
+      });
+      alert('✅ All reveals have been reset!');
+    }
+
+    function resetEverything() {
+      if (!confirm('⚠️ This will delete ALL data! Are you absolutely sure?')) return;
+      if (!confirm('Final confirmation: Delete everything?')) return;
+      
+      localStorage.clear();
+      alert('✅ Everything has been reset!');
+      location.reload();
+    }
+
+    // Allow Enter key to login
+    document.getElementById('passwordInput').addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') login();
+    });
+  </script>
+</body>
+</html>
