@@ -329,11 +329,21 @@
      (function() {
     const RESET_VERSION = 'v2'; // Change this to 'v3', 'v4', etc. if you need to reset again
     const resetKey = 'christmas_reset_version';
+    const USED_KEY_PREFIX_LOCAL = 'christmas_friend_used_';
     
     if (localStorage.getItem(resetKey) !== RESET_VERSION) {
       // Clear the problematic flags
       localStorage.removeItem('christmas_friend_done');
       localStorage.removeItem('christmas_friend_opened');
+      // Remove per-student used flags as well
+      const keysToRemove = [];
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key && key.indexOf(USED_KEY_PREFIX_LOCAL) === 0) {
+          keysToRemove.push(key);
+        }
+      }
+      keysToRemove.forEach(k => localStorage.removeItem(k));
       // Mark as reset
       localStorage.setItem(resetKey, RESET_VERSION);
     }
@@ -424,7 +434,6 @@
       return localStorage.getItem(USED_KEY_PREFIX + id) === 'true';
     }
 
-    // REPLACE the current renderStudents() in christmas.html with this
 function renderStudents() {
   const listEl = document.getElementById('studentList');
   listEl.innerHTML = '';
@@ -468,4 +477,3 @@ function renderStudents() {
   </script>
 </body>
 </html>
-
