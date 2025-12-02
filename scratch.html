@@ -498,11 +498,6 @@ window.addEventListener("popstate", function () {
       content.innerHTML = '<div class="error">' + message + '</div>';
     }
 
-    function showError(message) {
-      const content = document.getElementById('content');
-      content.innerHTML = '<div class="error">' + message + '</div>';
-    }
-
     function getRandomQuote() {
       return christmasQuotes[Math.floor(Math.random() * christmasQuotes.length)];
     }
